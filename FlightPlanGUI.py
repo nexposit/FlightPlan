@@ -15,8 +15,9 @@ import FlightPlan
 
 
 class Ui_MainWindow(object):
-    fp = pd.DataFrame()
+    fp = pd.DataFrame()  # Dataframe for FlightPlan
 
+    # Created by: PyQt5 UI code generator 5.15.4
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(723, 492)
@@ -176,6 +177,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.dep_airport, self.SID)
         MainWindow.setTabOrder(self.SID, self.runway)
 
+    # Created by: PyQt5 UI code generator 5.15.4
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FlightPlanGUI"))
@@ -194,7 +196,9 @@ class Ui_MainWindow(object):
         self.submit.setText(_translate("MainWindow", "Generate"))
         self.to_excel.setText(_translate("MainWindow", "Export .xlsx"))
 
+    # Setup all relationated with the form
     def setupForms(self):
+        # Function that changes values of the drop-down when some data has changed
         def onChanged(table, selected, selectedText, affected, affectedComboBox):
             items = table[table[selected] == selectedText][affected].unique()
             affectedComboBox.clear()
@@ -207,6 +211,7 @@ class Ui_MainWindow(object):
         self.arr_airport.addItem(" ")
         self.arr_airport.addItems(FlightPlan.arrival['Airport'].unique())
 
+        # When departure airport is selected, departure SID will change
         self.dep_airport.currentTextChanged.connect(
             lambda: onChanged(
                 FlightPlan.departure,
@@ -216,6 +221,7 @@ class Ui_MainWindow(object):
                 self.SID
             )
         )
+        # When departure SID is selected, departure runway will change
         self.SID.currentTextChanged.connect(
             lambda: onChanged(
                 FlightPlan.departure,
@@ -225,7 +231,7 @@ class Ui_MainWindow(object):
                 self.runway
             )
         )
-
+        # When arrival airport is selected, arrival IAP will change
         self.arr_airport.currentTextChanged.connect(
             lambda: onChanged(
                 FlightPlan.arrival,
@@ -235,7 +241,7 @@ class Ui_MainWindow(object):
                 self.IAP
             )
         )
-
+    # Function that removes all whitespace and line break
     def cleanWaypointsInput(self):
         waypoints = self.inter_waypoints.toPlainText()
         waypoints = waypoints.replace(" ", "")
@@ -258,7 +264,7 @@ class Ui_MainWindow(object):
 
         self.tabla_waypoints.setColumnCount(self.fp.shape[1])
         columns = self.fp.columns.values
-        for i in range(self.fp.shape[1]):
+        for i in range(self.fp.shape[1]):  # Create the table headers
             self.tabla_waypoints.setHorizontalHeaderItem(
                 i,
                 QtWidgets.QTableWidgetItem(columns[i])
