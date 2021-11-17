@@ -11,12 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 import matplotlib.pyplot as plt
-import main
-
-fp = pd.DataFrame()
+import FlightPlan
 
 
 class Ui_MainWindow(object):
+    fp = pd.DataFrame()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(723, 492)
@@ -163,10 +163,10 @@ class Ui_MainWindow(object):
         self.tableGraphHorizontalLayout.addLayout(self.tableVerticalLayout)
         self.graphVerticalLayout = QtWidgets.QVBoxLayout()
         self.graphVerticalLayout.setObjectName("graphVerticalLayout")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setText("")
-        self.label.setObjectName("label")
-        self.graphVerticalLayout.addWidget(self.label)
+        self.ruta_waypoints = QtWidgets.QLabel(self.centralwidget)
+        self.ruta_waypoints.setText("")
+        self.ruta_waypoints.setObjectName("ruta_waypoints")
+        self.graphVerticalLayout.addWidget(self.ruta_waypoints)
         self.tableGraphHorizontalLayout.addLayout(self.graphVerticalLayout)
         self.verticalLayout_4.addLayout(self.tableGraphHorizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -179,115 +179,142 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FlightPlanGUI"))
-        self.departureFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
+        self.departureFormLabel.setText(_translate("MainWindow",
+                                                   "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
         self.dp_runway_label.setText(_translate("MainWindow", "SID"))
         self.dp_sid_label.setText(_translate("MainWindow", "Runway"))
         self.dp_airport_label.setText(_translate("MainWindow", "Airport"))
-        self.intermediateFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
+        self.intermediateFormLabel.setText(_translate("MainWindow",
+                                                      "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
         self.in_waypoints_label.setText(_translate("MainWindow", "Waypoints"))
-        self.arrivalFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
+        self.arrivalFormLabel.setText(_translate("MainWindow",
+                                                 "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
         self.ar_airport_label.setText(_translate("MainWindow", "Airport"))
         self.ar_iap_label.setText(_translate("MainWindow", "IAP"))
         self.submit.setText(_translate("MainWindow", "Generate"))
         self.to_excel.setText(_translate("MainWindow", "Export .xlsx"))
 
-    def setUp(self):
-        departure_airport = main.departure['Airport'].unique()
-        self.dep_airport.addItems([" "])
-        self.dep_airport.addItems(departure_airport)
-        self.dep_airport.currentTextChanged.connect(self.valores_sid)
-        self.SID.currentTextChanged.connect(self.valores_runway)
+    def setupForms(self):
+        def onChanged(table, selected, selectedText, affected, affectedComboBox):
+            items = table[table[selected] == selectedText][affected].unique()
+            affectedComboBox.clear()
+            affectedComboBox.addItem(" ")
+            affectedComboBox.addItems(items)
 
-        arrival_airport = main.arrival['Airport'].unique()
-        self.arr_airport.addItems([" "])
-        self.arr_airport.addItems(arrival_airport)
+        self.dep_airport.addItem(" ")
+        self.dep_airport.addItems(FlightPlan.departure['Airport'].unique())
 
-        self.arr_airport.currentTextChanged.connect(self.valores_iap)
+        self.arr_airport.addItem(" ")
+        self.arr_airport.addItems(FlightPlan.arrival['Airport'].unique())
 
-        self.submit.clicked.connect(self.confirmar_formulario)
-        self.to_excel.clicked.connect(self.table_to_excel)
+        self.dep_airport.currentTextChanged.connect(
+            lambda: onChanged(
+                FlightPlan.departure,
+                'Airport',
+                self.dep_airport.currentText(),
+                'SID',
+                self.SID
+            )
+        )
+        self.SID.currentTextChanged.connect(
+            lambda: onChanged(
+                FlightPlan.departure,
+                'SID',
+                self.SID.currentText(),
+                'Runway',
+                self.runway
+            )
+        )
 
-    def valores_sid(self):
-        airport = self.dep_airport.currentText()
-        sid = main.departure[main.departure['Airport'] == airport]
-        sid = sid['SID'].unique()
-        self.SID.clear()
-        self.SID.addItems([" "])
-        self.SID.addItems(sid)
+        self.arr_airport.currentTextChanged.connect(
+            lambda: onChanged(
+                FlightPlan.arrival,
+                'Airport',
+                self.arr_airport.currentText(),
+                'IAP',
+                self.IAP
+            )
+        )
 
-    def valores_runway(self):
-        sid = self.SID.currentText()
-        runway = main.departure[main.departure['SID'] == sid]
-        runway = runway['Runway'].unique()
-        self.runway.clear()
-        self.runway.addItems([" "])
-        self.runway.addItems(runway)
-
-    def valores_iap(self):
-        airport = self.arr_airport.currentText()
-        iap = main.arrival[main.arrival['Airport'] == airport]
-        iap = iap['IAP'].unique()
-        self.IAP.clear()
-        self.IAP.addItems([" "])
-        self.IAP.addItems(iap)
-
-    def confirmar_formulario(self):
-        global fp
-        dep_airport = self.dep_airport.currentText()
-        sid = self.SID.currentText()
-        runway = self.runway.currentText()
+    def cleanWaypointsInput(self):
         waypoints = self.inter_waypoints.toPlainText()
         waypoints = waypoints.replace(" ", "")
         waypoints = waypoints.replace("\n", "")
         waypoints = waypoints.split(',')
-        arr_airport = self.arr_airport.currentText()
-        iap = self.IAP.currentText()
+        return waypoints
 
-        if dep_airport != " " and sid != " " and runway != " " and arr_airport != " " and waypoints != "" and iap != " ":
-            fp = main.flight_plan(dep_airport, sid, runway, waypoints, arr_airport, iap)
-            self.crearTabla()
-            self.crearGrafico()
+    def generateFlightPlan(self):
+        self.fp = FlightPlan.flight_plan(
+            self.dep_airport.currentText(),
+            self.SID.currentText(),
+            self.runway.currentText(),
+            self.cleanWaypointsInput(),
+            self.arr_airport.currentText(),
+            self.IAP.currentText()
+        )
 
-    def crearTabla(self):
-        global fp
+    def createTable(self):
         self.tabla_waypoints.clear()
-        self.tabla_waypoints.setColumnCount(6)
-        column = fp.columns.values
-        for i in range(6):
-            self.tabla_waypoints.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(column[i]))
-        self.tabla_waypoints.setRowCount(fp.shape[0] - 1)
-        for i in range(fp.shape[0]):
-            for j in range(6):
-                self.tabla_waypoints.setItem(i, j, QtWidgets.QTableWidgetItem(str(fp.iloc[i, j])))
 
-    def crearGrafico(self):
-        global fp
+        self.tabla_waypoints.setColumnCount(self.fp.shape[1])
+        columns = self.fp.columns.values
+        for i in range(self.fp.shape[1]):
+            self.tabla_waypoints.setHorizontalHeaderItem(
+                i,
+                QtWidgets.QTableWidgetItem(columns[i])
+            )
+
+        self.tabla_waypoints.setRowCount(self.fp.shape[0] - 1)
+        for i in range(self.fp.shape[0]):
+            for j in range(self.fp.shape[1]):
+                self.tabla_waypoints.setItem(
+                    i,
+                    j,
+                    QtWidgets.QTableWidgetItem(str(self.fp.iloc[i, j]))
+                )
+
+    def crearGraph(self):
         fig, ax = plt.subplots()
-        altitude = fp['Altitude']
-        distance = fp['Leg_distance']
+        altitude = self.fp['Altitude']
+        distance = self.fp['Leg_distance']
         ax.plot(distance, altitude)
         plt.title("Flight Plan")
         plt.xlabel("Distance (km)")
         plt.ylabel("Altitude (ft)")
         plt.savefig("output/flight_plan.png")
-        self.mostrar_grafico()
+        self.showGraph()
 
-    def table_to_excel(self):
-        global fp
-        fp.to_excel('output/ruta.xlsx')
-
-    def mostrar_grafico(self):
+    def showGraph(self):
         pixmap = QtGui.QPixmap('output/flight_plan.png')
         self.ruta_waypoints.setPixmap(pixmap)
+
+    def setup(self):
+        self.setupForms()
+
+        def onGenerate():
+            if (
+                    self.dep_airport.currentText() != " " and self.SID.currentText() != " " and
+                    self.runway.currentText() != " " and self.cleanWaypointsInput() != [""] and
+                    self.arr_airport.currentText() != " " and self.IAP.currentText() != " "
+            ):
+                self.generateFlightPlan()
+                self.createTable()
+                self.crearGraph()
+
+        def table_to_excel():
+            self.fp.to_excel('output/waypoints.xlsx')
+
+        self.submit.clicked.connect(onGenerate)
+        self.to_excel.clicked.connect(table_to_excel)
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    ui.setUp()
+    ui.setup()
     MainWindow.show()
     sys.exit(app.exec_())
-

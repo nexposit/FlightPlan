@@ -1,6 +1,5 @@
 import pandas as pd
 import math
-import flight_plan
 
 
 # Calculates geographic distance
