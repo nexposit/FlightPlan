@@ -16,6 +16,30 @@ import FlightPlan
 
 class Ui_MainWindow(object):
     fp = pd.DataFrame()  # Dataframe for FlightPlan
+    waypoint_ID = {'RW4L': 15,
+                   'DEEZZ': 16,
+                   'HEERO': 17,
+                   'KURNL': 18,
+                   'CANDR': 19,
+                   'TOWIN': 20,
+                   'RW4R': 21,
+                   'RW13L': 22,
+                   'RW13R': 23,
+                   'RW22L': 24,
+                   'RW22R': 25,
+                   'RW31L': 26,
+                   'RW31R': 27,
+                   'SKORR': 28,
+                   'CESID': 29,
+                   'YNKEE': 30,
+                   'METSS': 31,
+                   'RNGRR': 32,
+                   'DGRAF': 33,
+                   'ICHOL': 34,
+                   'SMERF': 35,
+                   'BAKMN': 36,
+                   'JALON': 37,
+                   'RW34L': 38}
 
     # Created by: PyQt5 UI code generator 5.15.4
     def setupUi(self, MainWindow):
@@ -158,6 +182,11 @@ class Ui_MainWindow(object):
         self.tabla_waypoints.setColumnCount(0)
         self.tabla_waypoints.setRowCount(0)
         self.tableVerticalLayout.addWidget(self.tabla_waypoints)
+        self.path = QtWidgets.QLabel(self.centralwidget)
+        self.path.setText("")
+        self.path.setAlignment(QtCore.Qt.AlignCenter)
+        self.path.setObjectName("path")
+        self.tableVerticalLayout.addWidget(self.path)
         self.tableGraphHorizontalLayout.addLayout(self.tableVerticalLayout)
         self.graphVerticalLayout = QtWidgets.QVBoxLayout()
         self.graphVerticalLayout.setObjectName("graphVerticalLayout")
@@ -167,11 +196,6 @@ class Ui_MainWindow(object):
         self.graphVerticalLayout.addWidget(self.ruta_waypoints)
         self.tableGraphHorizontalLayout.addLayout(self.graphVerticalLayout)
         self.verticalLayout_4.addLayout(self.tableGraphHorizontalLayout)
-        self.path = QtWidgets.QLabel(self.centralwidget)
-        self.path.setText("")
-        self.path.setAlignment(QtCore.Qt.AlignCenter)
-        self.path.setObjectName("path")
-        self.verticalLayout_4.addWidget(self.path)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -182,13 +206,16 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FlightPlanGUI"))
-        self.departureFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
+        self.departureFormLabel.setText(_translate("MainWindow",
+                                                   "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
         self.dp_runway_label.setText(_translate("MainWindow", "SID"))
         self.dp_sid_label.setText(_translate("MainWindow", "Runway"))
         self.dp_airport_label.setText(_translate("MainWindow", "Airport"))
-        self.intermediateFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
+        self.intermediateFormLabel.setText(_translate("MainWindow",
+                                                      "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
         self.in_waypoints_label.setText(_translate("MainWindow", "Waypoints"))
-        self.arrivalFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
+        self.arrivalFormLabel.setText(_translate("MainWindow",
+                                                 "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
         self.ar_airport_label.setText(_translate("MainWindow", "Airport"))
         self.ar_iap_label.setText(_translate("MainWindow", "IAP"))
         self.submit.setText(_translate("MainWindow", "Generate"))
@@ -238,6 +265,7 @@ class Ui_MainWindow(object):
                 self.IAP
             )
         )
+
     # Function that removes all whitespace and line break
     def cleanWaypointsInput(self):
         waypoints = self.inter_waypoints.toPlainText()
@@ -294,6 +322,12 @@ class Ui_MainWindow(object):
     def setup(self):
         self.setupForms()
 
+        def waypoints_table():
+            fp_matlab = self.fp.copy()
+            for i in range(fp_matlab.shape[0]):
+                fp_matlab.iloc[i,0] = self.waypoint_ID[fp_matlab.iloc[i,0]]
+            return fp_matlab
+
         def onGenerate():
             if (
                     self.dep_airport.currentText() != " " and self.SID.currentText() != " " and
@@ -303,6 +337,7 @@ class Ui_MainWindow(object):
                 self.generateFlightPlan()
                 self.createTable()
                 self.fp.to_excel('output/waypoints.xlsx')
+                waypoints_table().to_excel('output/waypoints_matlab.xlsx')
                 self.path.setText('Se ha generado:\n'
                                   '- output/waypoints.xlsx\n'
                                   '- output/flight_plan.png\n'
@@ -322,5 +357,3 @@ if __name__ == "__main__":
     ui.setup()
     MainWindow.show()
     sys.exit(app.exec_())
-
-
