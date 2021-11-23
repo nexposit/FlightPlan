@@ -291,6 +291,9 @@ class Ui_MainWindow(object):
         pixmap = QtGui.QPixmap('output/flight_plan.png')
         self.ruta_waypoints.setPixmap(pixmap)
 
+    def xlsx2mat(self):
+        os.system("./output/xlsx2mat.exe")
+
     def setup(self):
         self.setupForms()
 
@@ -303,11 +306,12 @@ class Ui_MainWindow(object):
                 self.generateFlightPlan()
                 self.createTable()
                 self.fp.to_excel('output/waypoints.xlsx')
+                self.xlsx2mat()
+                self.crearGraph()
                 self.path.setText('Se ha generado:\n'
                                   '- output/waypoints.xlsx\n'
                                   '- output/flight_plan.png\n'
                                   '- output/fp.mat')
-                self.crearGraph()
 
         self.submit.clicked.connect(onGenerate)
 
