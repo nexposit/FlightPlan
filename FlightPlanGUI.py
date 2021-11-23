@@ -158,9 +158,6 @@ class Ui_MainWindow(object):
         self.tabla_waypoints.setColumnCount(0)
         self.tabla_waypoints.setRowCount(0)
         self.tableVerticalLayout.addWidget(self.tabla_waypoints)
-        self.to_excel = QtWidgets.QPushButton(self.centralwidget)
-        self.to_excel.setObjectName("to_excel")
-        self.tableVerticalLayout.addWidget(self.to_excel)
         self.tableGraphHorizontalLayout.addLayout(self.tableVerticalLayout)
         self.graphVerticalLayout = QtWidgets.QVBoxLayout()
         self.graphVerticalLayout.setObjectName("graphVerticalLayout")
@@ -170,6 +167,11 @@ class Ui_MainWindow(object):
         self.graphVerticalLayout.addWidget(self.ruta_waypoints)
         self.tableGraphHorizontalLayout.addLayout(self.graphVerticalLayout)
         self.verticalLayout_4.addLayout(self.tableGraphHorizontalLayout)
+        self.path = QtWidgets.QLabel(self.centralwidget)
+        self.path.setText("")
+        self.path.setAlignment(QtCore.Qt.AlignCenter)
+        self.path.setObjectName("path")
+        self.verticalLayout_4.addWidget(self.path)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -177,24 +179,19 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.dep_airport, self.SID)
         MainWindow.setTabOrder(self.SID, self.runway)
 
-    # Created by: PyQt5 UI code generator 5.15.4
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FlightPlanGUI"))
-        self.departureFormLabel.setText(_translate("MainWindow",
-                                                   "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
+        self.departureFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Departure</span></p></body></html>"))
         self.dp_runway_label.setText(_translate("MainWindow", "SID"))
         self.dp_sid_label.setText(_translate("MainWindow", "Runway"))
         self.dp_airport_label.setText(_translate("MainWindow", "Airport"))
-        self.intermediateFormLabel.setText(_translate("MainWindow",
-                                                      "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
+        self.intermediateFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Intermediate</span></p></body></html>"))
         self.in_waypoints_label.setText(_translate("MainWindow", "Waypoints"))
-        self.arrivalFormLabel.setText(_translate("MainWindow",
-                                                 "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
+        self.arrivalFormLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Arrival</span></p></body></html>"))
         self.ar_airport_label.setText(_translate("MainWindow", "Airport"))
         self.ar_iap_label.setText(_translate("MainWindow", "IAP"))
         self.submit.setText(_translate("MainWindow", "Generate"))
-        self.to_excel.setText(_translate("MainWindow", "Export .xlsx"))
 
     # Setup all relationated with the form
     def setupForms(self):
@@ -305,13 +302,14 @@ class Ui_MainWindow(object):
             ):
                 self.generateFlightPlan()
                 self.createTable()
+                self.fp.to_excel('output/waypoints.xlsx')
+                self.path.setText('Se ha generado:\n'
+                                  '- output/waypoints.xlsx\n'
+                                  '- output/flight_plan.png\n'
+                                  '- output/fp.mat')
                 self.crearGraph()
 
-        def table_to_excel():
-            self.fp.to_excel('output/waypoints.xlsx')
-
         self.submit.clicked.connect(onGenerate)
-        self.to_excel.clicked.connect(table_to_excel)
 
 
 if __name__ == "__main__":
@@ -324,3 +322,5 @@ if __name__ == "__main__":
     ui.setup()
     MainWindow.show()
     sys.exit(app.exec_())
+
+

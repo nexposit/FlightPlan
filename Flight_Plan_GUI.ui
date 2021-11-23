@@ -241,13 +241,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="to_excel">
-          <property name="text">
-           <string>Export .xlsx</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -262,6 +255,16 @@
        </layout>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="path">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
