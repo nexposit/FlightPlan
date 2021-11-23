@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 import matplotlib.pyplot as plt
 import FlightPlan
+import os
 
 
 class Ui_MainWindow(object):
@@ -319,6 +320,10 @@ class Ui_MainWindow(object):
         pixmap = QtGui.QPixmap('output/flight_plan.png')
         self.ruta_waypoints.setPixmap(pixmap)
 
+    def xlsx2mat(self):
+        #os.startfile("output/xlsx2mat.exe")
+        return None
+
     def setup(self):
         self.setupForms()
 
@@ -338,11 +343,12 @@ class Ui_MainWindow(object):
                 self.createTable()
                 self.fp.to_excel('output/waypoints.xlsx')
                 waypoints_table().to_excel('output/waypoints_matlab.xlsx')
+                self.xlsx2mat()
+                self.crearGraph()
                 self.path.setText('Se ha generado:\n'
                                   '- output/waypoints.xlsx\n'
                                   '- output/flight_plan.png\n'
                                   '- output/fp.mat')
-                self.crearGraph()
 
         self.submit.clicked.connect(onGenerate)
 

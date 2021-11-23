@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="271be1b9-af32-4a58-8f58-6b23be554296" name="Changes" comment="Actualizado">
-      <change afterPath="$PROJECT_DIR$/output/waypoints_matlab.xlsx" afterDir="false" />
+    <list default="true" id="271be1b9-af32-4a58-8f58-6b23be554296" name="Changes" comment="Flight Plan actualizado">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FlightPlanGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/FlightPlanGUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/fp.mat" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/output/waypoints.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/output/waypoints.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/waypoints_matlab.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/output/waypoints_matlab.xlsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,6 +115,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Actualizado" />
-    <option name="LAST_COMMIT_MESSAGE" value="Actualizado" />
+    <MESSAGE value="Flight Plan actualizado" />
+    <option name="LAST_COMMIT_MESSAGE" value="Flight Plan actualizado" />
   </component>
 </project>
